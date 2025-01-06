@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import f1gptlogo from './assets/f1gptlogo.png'
+import f1gptlogo from './assets/f1gptlogo.png';
 
 //useChat (from vercel) creates conversational user interface
 //for chatbot application.
