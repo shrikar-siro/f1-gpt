@@ -85,6 +85,19 @@
    outline: none;
  }
 
+ .bubble{
+   margin: 8px;
+   padding: 8px;
+   font-size: 15px;
+   border: none;
+   /* off white color for bubble text. */
+   color: #faf9f6;
+   box-shadow: #959da533 0 8px 24px;
+   width: 80%;
+   text-align: left;
+
+ }
+
  /* creates loading animation (three circles changing in size.) */
  .loader{
    margin: 10px;

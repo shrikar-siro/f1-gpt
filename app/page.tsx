@@ -8,7 +8,7 @@ import f1gptlogo from "./assets/f1gptlogo.png"
 import {useChat} from "ai/react"
 
 
-// import {Message} from "ai"
+import {Message} from "ai"
 
 
 //necessary components: 
@@ -44,7 +44,8 @@ const Home = () => {
                    </>
                ):(
                    <>
-                       {/* map messages onto text bubbles. */}
+                       {/* map messages onto text bubbles if any messages exist.*/}
+                       {messages.map((message, index) => <Bubble key = {`index: ${index}`} message = {message}/>)}
                        {/* only show loading bubbles if response is loading. */}
                        {isLoading && <LoadingBubble />}
                    </>
