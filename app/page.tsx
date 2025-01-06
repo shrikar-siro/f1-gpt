@@ -21,7 +21,18 @@ import PromptSuggestions from "./components/PromptSuggestions";
 //we export this constant which contains our HTML.
 const Home = () => {
    const {append, isLoading, messages, input, handleInputChange, handleSubmit} = useChat();
-   const noMessages = false;
+   const noMessages = !messages || messages.length === 0;
+
+   //handling prompts
+   const handlePrompt = (promptText) => {
+    //get prompt text give identifier, and append to a message object.
+    const msg: Message = {
+        id: crypto.randomUUID(),
+        content: promptText,
+        role: "user"
+    }
+    append(msg)
+   }
    return (
        <main>
 
@@ -34,13 +45,12 @@ const Home = () => {
            <section className= {noMessages ? "" : "populated"}>
                {/*if noMessages, is true, show something. Otherwise, show something else*/}
 
-
                {noMessages ? (
                    <>
                        <p className="starter-text">The ultimate place for F1 super fans! Ask F1 GPT anything about F1 and it will present the most up-to-date answers. Enjoy!</p>
                        <br />
                        {/*show sample questions (if user can't think of anything*/}
-                       <PromptSuggestions />
+                       <PromptSuggestions onPromptClick={handlePrompt}/>
                    </>
                ):(
                    <>
