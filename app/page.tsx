@@ -11,10 +11,17 @@ import {useChat} from "ai/react"
 // import {Message} from "ai"
 
 
+//necessary components: 
+import Bubble from "./components/Bubble";
+import LoadingBubble from "./components/LoadingBubble";
+import PromptSuggestions from "./components/PromptSuggestions";
+
+
+
 //we export this constant which contains our HTML.
 const Home = () => {
    const {append, isLoading, messages, input, handleInputChange, handleSubmit} = useChat();
-   const noMessages = true;
+   const noMessages = false;
    return (
        <main>
 
@@ -33,12 +40,13 @@ const Home = () => {
                        <p className="starter-text">The ultimate place for F1 super fans! Ask F1 GPT anything about F1 and it will present the most up-to-date answers. Enjoy!</p>
                        <br />
                        {/*show sample questions (if user can't think of anything*/}
-                       {/* <PromptSuggestions /> */}
+                       <PromptSuggestions />
                    </>
                ):(
                    <>
                        {/* map messages onto text bubbles. */}
-                       {/* <LoadingBubble /> */}
+                       {/* only show loading bubbles if response is loading. */}
+                       {isLoading && <LoadingBubble />}
                    </>
                )}
            </section>
