@@ -1,4 +1,4 @@
-import "f1-gpt/app/global.css"
+import "./global.css"
 
 export const metadata = {
     title: "F1GPT",
