@@ -1,9 +1,12 @@
-import { createOpenAI, openai} from '@ai-sdk/openai';
+// import { createOpenAI, openai} from '@ai-sdk/openai';
+import Configuration from '@ai-sdk/openai';
+import OpenAIApi from '@ai-sdk/openai'
 import {streamText } from 'ai'
 import { DataAPIClient } from '@datastax/astra-db-ts';
 
 
 import dotenv from 'dotenv'
+import OpenAI from 'openai';
 dotenv.config();
 
 const {ASTRA_DB_NAMESPACE, 
@@ -19,7 +22,9 @@ const {ASTRA_DB_NAMESPACE,
 //  console.log(`Token: ${ASTRA_DB_APPLICATION_TOKEN}`);
 //  console.log(`Endpoint: ${ASTRA_DB_API_ENDPOINT}`);
 
- const OpenAI = createOpenAI({apiKey: OPEN_AI_APIKEY})
+ const openai = new OpenAI({
+    apiKey: OPEN_AI_APIKEY
+ })
 
  const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
 
@@ -31,11 +36,12 @@ const {ASTRA_DB_NAMESPACE,
         const latestMessage = messages[messages?.length - 1]?.content;
 
         let docContext = "";
-        const embedding = await openai.embedding.apply({
+        const embedding = await openai.embeddings.create({
             model: "text-embedding-3-small",
             input: latestMessage,
             encoding_format: "float"
         });
+
         console.log(embedding);
         try{
             const collection = await db.collection(ASTRA_DB_COLLECTION);
@@ -50,8 +56,9 @@ const {ASTRA_DB_NAMESPACE,
 
             //documents is the 10 similar pieces of information
             const documents = await cursor.toArray();
-            const docsMap = documents?.map(doc => doc.text)
-            docContext = JSON.stringify(docsMap)
+            const docsMap = documents?.map(doc => doc.text);
+            docContext = JSON.stringify(docsMap);
+
         }catch(err){
             console.log("Error querying database.");
             docContext = ""
@@ -74,12 +81,19 @@ const {ASTRA_DB_NAMESPACE,
             --------------------------
             `
         }
-        const result = await streamText({
-            model: openai('gpt-4-turbo'),
-            messages: [template,...messages]
-        })
+        const result = await openai.chat.completions.create({
+            model: 'gpt-4',
+            stream: true,
+            messages: [template, ...messages]
+        });
 
-        return result.toDataStreamResponse();
+        const response = new Response(result.toReadableStream(), {
+            headers: {"Content-Type":"application/json"}
+        });
+
+        console.log(response)
+
+        return response
 
         // const response = new Response(JSON.stringify(result), {
         //     status: 200,
@@ -89,9 +103,7 @@ const {ASTRA_DB_NAMESPACE,
         // //since response is already a stream, the return should work.
         // return new StreamTextResult;
 
-        
-        
     } catch(err){
-        throw err
+        console.log(`Error message: ${err}`);
     }
 }
