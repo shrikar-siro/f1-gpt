@@ -1,6 +1,10 @@
-import { createOpenAI, openai } from '@ai-sdk/openai';
-import { streamText } from 'ai';
+import { createOpenAI, openai} from '@ai-sdk/openai';
+import {streamText } from 'ai'
 import { DataAPIClient } from '@datastax/astra-db-ts';
+
+
+import dotenv from 'dotenv'
+dotenv.config();
 
 const {ASTRA_DB_NAMESPACE, 
     ASTRA_DB_COLLECTION, 
@@ -68,13 +72,18 @@ const {ASTRA_DB_NAMESPACE,
             messages: [template,...messages]
         })
 
-        const response = new Response(JSON.stringify(result), {
-            status: 200,
-            headers: {'Content-Type':'application/json'}
-        });
+        console.log(`OpenAI API Key: ${OPEN_AI_APIKEY}`);
+        return result.toDataStreamResponse();
 
-        //since response is already a stream, the return should work.
-        return response;
+        // const response = new Response(JSON.stringify(result), {
+        //     status: 200,
+        //     headers: {'Content-Type':'application/json'}
+        // });
+
+        // //since response is already a stream, the return should work.
+        // return new StreamTextResult;
+
+        
         
     } catch(err){
         throw err
