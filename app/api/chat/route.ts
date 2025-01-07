@@ -13,6 +13,12 @@ const {ASTRA_DB_NAMESPACE,
     OPEN_AI_APIKEY
  } = process.env
 
+//  console.log(`OpenAI API Key: ${OPEN_AI_APIKEY}`);
+//  console.log(`Namespace: ${ASTRA_DB_NAMESPACE}`);
+//  console.log(`Collection: ${ASTRA_DB_COLLECTION}`);
+//  console.log(`Token: ${ASTRA_DB_APPLICATION_TOKEN}`);
+//  console.log(`Endpoint: ${ASTRA_DB_API_ENDPOINT}`);
+
  const OpenAI = createOpenAI({apiKey: OPEN_AI_APIKEY})
 
  const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
@@ -30,6 +36,7 @@ const {ASTRA_DB_NAMESPACE,
             input: latestMessage,
             encoding_format: "float"
         });
+        console.log(embedding);
         try{
             const collection = await db.collection(ASTRA_DB_COLLECTION);
             //trying to find something similar to the latest message provided.
@@ -72,7 +79,6 @@ const {ASTRA_DB_NAMESPACE,
             messages: [template,...messages]
         })
 
-        console.log(`OpenAI API Key: ${OPEN_AI_APIKEY}`);
         return result.toDataStreamResponse();
 
         // const response = new Response(JSON.stringify(result), {
