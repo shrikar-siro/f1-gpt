@@ -1,5 +1,5 @@
-import OpenAI from "openai";
-import {streamText} from 'ai';
+import { createOpenAI, openai } from '@ai-sdk/openai';
+import { streamText } from 'ai';
 import { DataAPIClient } from '@datastax/astra-db-ts';
 
 const {ASTRA_DB_NAMESPACE, 
@@ -9,7 +9,7 @@ const {ASTRA_DB_NAMESPACE,
     OPEN_AI_APIKEY
  } = process.env
 
- const openai = new OpenAI({apiKey: OPEN_AI_APIKEY})
+ const OpenAI = createOpenAI({apiKey: OPEN_AI_APIKEY})
 
  const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
 
@@ -21,7 +21,7 @@ const {ASTRA_DB_NAMESPACE,
         const latestMessage = messages[messages?.length - 1]?.content;
 
         let docContext = "";
-        const embedding = await openai.embeddings.create({
+        const embedding = await openai.embedding.apply({
             model: "text-embedding-3-small",
             input: latestMessage,
             encoding_format: "float"
@@ -63,14 +63,20 @@ const {ASTRA_DB_NAMESPACE,
             --------------------------
             `
         }
-        const respose = await openai.chat.completions.create({
-            model: 'gpt-4-turbo',
-            stream: true,
+        const result = await streamText({
+            model: openai('gpt-4-turbo'),
             messages: [template,...messages]
         })
 
-    
+        const response = new Response(JSON.stringify(result), {
+            status: 200,
+            headers: {'Content-Type':'application/json'}
+        });
 
-
+        //since response is already a stream, the return should work.
+        return response;
+        
+    } catch(err){
+        throw err
     }
 }
